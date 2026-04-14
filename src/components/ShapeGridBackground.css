@@ -1,0 +1,35 @@
+/* 四、总结与反思 · 形状网格；底色与二、三（实战篇）同款冷黑 */
+.section--shape-grid {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: #050508;
+  background-image: linear-gradient(180deg, #06060c 0%, #050508 42%, #040408 100%);
+}
+
+.section--shape-grid::before {
+  display: none;
+}
+
+.section-shape-grid-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.shape-grid-canvas.section-shape-grid-bg__canvas,
+.section-shape-grid-bg__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+.section--shape-grid .container {
+  position: relative;
+  z-index: 1;
+}

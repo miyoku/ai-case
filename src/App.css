@@ -25,7 +25,39 @@ body {
 }
 
 .app {
+  position: relative;
   min-height: 100vh;
+}
+
+/* React Bits GridScan：全屏固定背景（不参与点击，避免挡住按钮） */
+.app-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+
+.app-background--hidden {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s ease, visibility 0s linear 0.45s;
+}
+
+.app-background__grid,
+.app-background__grid.gridscan {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.app-foreground {
+  position: relative;
+  z-index: 1;
 }
 
 /* 导航栏 */
@@ -80,7 +112,7 @@ body {
   color: white;
 }
 
-/* 首页 */
+/* 首页（背景由全屏 GridScan 提供，不再叠渐变层） */
 .hero {
   min-height: 100vh;
   display: flex;
@@ -89,25 +121,7 @@ body {
   position: relative;
   overflow: hidden;
   padding: 2rem;
-}
-
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(244, 114, 182, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.1) 0%, transparent 40%);
-  animation: float 20s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  50% { transform: translate(-2%, 2%) rotate(1deg); }
+  padding-top: 5rem;
 }
 
 .hero-content {
@@ -137,6 +151,7 @@ body {
   font-size: 1.5rem;
   color: var(--gray);
   margin-bottom: 1rem;
+  min-height: 2.25rem;
 }
 
 .hero-desc {
@@ -184,6 +199,80 @@ body {
   pointer-events: none;
 }
 
+/* 烛龙-odoo：柔和极光（Soft Aurora）铺满整段，不与默认 section 渐变叠在一起 */
+.section--soft-aurora {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  /* 极光 canvas 带透明通道，需垫实色，否则 fixed 的 GridScan 会透出来叠两层 */
+  background-color: var(--darker);
+}
+
+.section--soft-aurora::before {
+  display: none;
+}
+
+.section-aurora-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.section-aurora-bg .soft-aurora-container {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
+.section--soft-aurora .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* 烛龙-odoo 段：略偏紫黑的底，贴近 React Bits 极光预览氛围 */
+.section--odoo-aurora {
+  background-color: #070512;
+}
+
+/* 二、AI 全栈之旅：光线（Light Rays）铺满整段 */
+.section--light-rays {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: #050508;
+  padding-top: 0;
+}
+
+.section--light-rays::before {
+  display: none;
+}
+
+.section-lightrays-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.section-lightrays-bg__canvas,
+.section-lightrays-bg__canvas.light-rays-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
+.section-lightrays-bg .light-rays-container {
+  z-index: 0;
+}
+
+.section--light-rays .container {
+  position: relative;
+  z-index: 1;
+  padding-top: 5.25rem;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -204,6 +293,15 @@ body {
 .section-desc {
   font-size: 1.1rem;
   color: var(--gray);
+  margin-bottom: 2rem;
+}
+
+.section-desc--odoo {
+  font-size: 1.1rem;
+}
+
+.section--odoo-aurora .section-desc--odoo {
+  text-align: center;
   margin-bottom: 2rem;
 }
 
@@ -245,6 +343,14 @@ body {
   color: var(--gray);
 }
 
+.card code {
+  font-size: 0.9em;
+  padding: 0.15em 0.45em;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--light);
+}
+
 .tip {
   margin-top: 1rem;
   padding-top: 1rem;
@@ -270,9 +376,122 @@ body {
   margin-top: 1.5rem;
 }
 
+/* 四、总结与反思 · AI 幻觉四卡：固定两行两列，无左侧黄条 */
+.summary-hallucination-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem 1.5rem;
+  margin-top: 1.5rem;
+  align-items: stretch;
+}
+
+.summary-hallucination-card {
+  margin-bottom: 0;
+}
+
+.summary-hallucination-card h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--light);
+  letter-spacing: 0;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+.summary-hallucination-card.card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+/* 二、AI 全栈之旅：三板块横向并列 */
+.journey-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  align-items: stretch;
+}
+
+/* 全栈之旅卡片：与段落说明、全站深色正文一致 */
+.journey-pillars .journey-pillar h3 {
+  font-weight: 600;
+}
+
+.journey-pillars .journey-pillar p {
+  color: var(--gray);
+}
+
+.journey-pillars .journey-pillar p + p {
+  margin-top: 0.45rem;
+}
+
+.journey-pillars .journey-pillar p:nth-of-type(2) {
+  margin-top: 0.8rem;
+}
+
+@media (max-width: 960px) {
+  .journey-pillars {
+    grid-template-columns: 1fr;
+  }
+}
+
+.journey-pillar {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.journey-pillar h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+  color: var(--light);
+}
+
+.journey-pillar p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  flex: 1;
+}
+
 /* 子章节 */
 .subsection {
   margin: 3rem 0;
+}
+
+.subsection--in-card {
+  margin: 1.25rem 0 0;
+}
+
+.section--odoo-aurora .subsection--in-card {
+  text-align: left;
+}
+
+.section--odoo-aurora .odoo-inline-label {
+  display: inline-block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--light);
+  margin-right: 0.25rem;
+  vertical-align: baseline;
+}
+
+.section--odoo-aurora .subsection--in-card p:nth-of-type(2) {
+  margin-top: 0.8rem;
+}
+
+.section--odoo-aurora .subsection--in-card p:nth-of-type(3) {
+  margin-top: 0.45rem;
+}
+
+.section--odoo-aurora .subsection--in-card p:nth-of-type(4) {
+  margin-top: 0.45rem;
+}
+
+.practice-cases-link {
+  margin: 1.25rem 0 0;
+  margin-bottom: 0;
+  color: var(--gray);
+  font-size: 1rem;
 }
 
 .subsection h3 {
@@ -338,13 +557,17 @@ body {
   color: var(--accent);
 }
 
-/* 结论 */
+/* 结论：底+边框对齐烛龙-odoo 段内 .card，叠极淡绿/紫晕（与 Soft Aurora 同色倾向） */
 .conclusion {
   margin-top: 4rem;
-  padding: 3rem;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-  border-radius: 20px;
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  padding: 2.5rem 2rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  background-image:
+    radial-gradient(ellipse 85% 70% at 20% 15%, rgba(74, 124, 98, 0.09), transparent 55%),
+    radial-gradient(ellipse 80% 65% at 85% 75%, rgba(91, 45, 143, 0.1), transparent 50%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   text-align: center;
 }
 
@@ -419,6 +642,10 @@ body {
   }
   
   .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-hallucination-grid {
     grid-template-columns: 1fr;
   }
   

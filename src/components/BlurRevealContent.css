@@ -1,0 +1,62 @@
+/* 块级模糊渐入（React Bits「模糊文本」风格），用于富文本段落 / 列表 */
+.blur-reveal-content > p,
+.blur-reveal-content .subsection h3,
+.blur-reveal-content .subsection li {
+  opacity: 0;
+  filter: blur(12px);
+  will-change: filter, opacity;
+}
+
+.blur-reveal-content--active > p,
+.blur-reveal-content--active .subsection h3,
+.blur-reveal-content--active .subsection li {
+  animation: blur-reveal-content-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.blur-reveal-content--active > p:nth-of-type(1) {
+  animation-delay: 0ms;
+}
+.blur-reveal-content--active > p:nth-of-type(2) {
+  animation-delay: 65ms;
+}
+.blur-reveal-content--active > p:nth-of-type(3) {
+  animation-delay: 130ms;
+}
+.blur-reveal-content--active .subsection h3 {
+  animation-delay: 195ms;
+}
+.blur-reveal-content--active .subsection li:nth-child(1) {
+  animation-delay: 260ms;
+}
+.blur-reveal-content--active .subsection li:nth-child(2) {
+  animation-delay: 325ms;
+}
+.blur-reveal-content--active .subsection li:nth-child(3) {
+  animation-delay: 390ms;
+}
+.blur-reveal-content--active .subsection li:nth-child(4) {
+  animation-delay: 455ms;
+}
+.blur-reveal-content--active .subsection li:nth-child(5) {
+  animation-delay: 520ms;
+}
+.blur-reveal-content--active .subsection li:nth-child(6) {
+  animation-delay: 585ms;
+}
+
+@keyframes blur-reveal-content-in {
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blur-reveal-content > p,
+  .blur-reveal-content .subsection h3,
+  .blur-reveal-content .subsection li {
+    animation: none !important;
+    opacity: 1;
+    filter: none;
+  }
+}

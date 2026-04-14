@@ -1,0 +1,98 @@
+/* React Bits「眩光悬停」：鼠标位置驱动高光；整张卡与文字一起入场 */
+.glare-hover-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  --glare-x: 50%;
+  --glare-y: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(32, 30, 56, 0.55);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  will-change: transform, opacity;
+}
+
+.glare-hover-card--entered {
+  animation: glare-card-enter 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes glare-card-enter {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.glare-hover-card.card {
+  padding: 0;
+}
+
+.glare-hover-card__shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    420px circle at var(--glare-x) var(--glare-y),
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(200, 190, 255, 0.08) 32%,
+    transparent 58%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.glare-hover-card:hover .glare-hover-card__shine {
+  opacity: 1;
+}
+
+/* 斜向眩光条，随光标轻微偏移 */
+.glare-hover-card__shine::after {
+  content: '';
+  position: absolute;
+  inset: -60%;
+  background: linear-gradient(
+    118deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.09) 49.5%,
+    rgba(255, 255, 255, 0.16) 50.5%,
+    transparent 58%
+  );
+  transform: translate(
+    calc((var(--glare-x) - 50%) * -0.45),
+    calc((var(--glare-y) - 50%) * -0.45)
+  );
+}
+
+.glare-hover-card__inner {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glare-hover-card {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+    will-change: auto;
+  }
+
+  .glare-hover-card__shine {
+    transition: none;
+  }
+
+  .glare-hover-card:hover .glare-hover-card__shine {
+    opacity: 0;
+  }
+}

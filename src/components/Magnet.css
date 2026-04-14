@@ -1,0 +1,22 @@
+/* 磁铁悬停：扩大感应区，内层位移不触发布局重排 */
+.magnet {
+  display: inline-flex;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.magnet__zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: content-box;
+}
+
+.magnet__shift {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+.magnet--static .magnet__shift {
+  will-change: auto;
+}

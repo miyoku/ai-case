@@ -1,10 +1,33 @@
 import { useState, useEffect } from 'react'
 import Confetti from 'react-confetti'
+import GridScan from './components/GridScan'
+import SoftAurora from './components/SoftAurora'
+import LightRays from './components/LightRays'
+import BlurRevealContent from './components/BlurRevealContent'
+import GlareHoverCard from './components/GlareHoverCard'
+import TrainingShowcase from './components/TrainingShowcase'
+import PixelSnow from './components/PixelSnow'
+import ShapeGridBackground from './components/ShapeGridBackground'
+import SkillsLanyard from './components/SkillsLanyard'
+import TypewriterLoop from './components/TypewriterLoop'
+import Magnet from './components/Magnet'
+import PixelTrailArea from './components/PixelTrailArea'
 import './App.css'
+
+const HERO_SUBTITLE_TEXT = '在我的电脑上可以正常运行，你再检查一下。'
+
+/** 前缀 + 删去错字后的后缀 === HERO_SUBTITLE_TEXT；错字为「云」误代「运」 */
+const HERO_SUBTITLE_TYPE_PARTS = {
+  prefix: '在我的电脑上可以正常',
+  typo: '云',
+  suffix: '运行，你再检查一下。',
+}
 
 function App() {
   const [activeSection, setActiveSection] = useState('intro')
   const [showConfetti, setShowConfetti] = useState(false)
+  const [showGridBackground, setShowGridBackground] = useState(true)
+  const [odooBlurReplayKey, setOdooBlurReplayKey] = useState(0)
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight })
 
   useEffect(() => {
@@ -15,22 +38,43 @@ function App() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  // Odoo 区块显著进入视口时再关掉 GridScan，避免首屏仅露出少量时误判隐藏
+  useEffect(() => {
+    const odoo = document.getElementById('odoo')
+    if (!odoo) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        // threshold=0 在大屏首刷容易被 1px 交叉触发；改为可见比例判断更稳定
+        setShowGridBackground(entry.intersectionRatio < 0.35)
+      },
+      { threshold: [0, 0.35, 0.7], rootMargin: '0px' }
+    )
+    io.observe(odoo)
+    return () => io.disconnect()
+  }, [])
+
   const scrollToSection = (id) => {
     const element = document.getElementById(id)
     if (element) {
+      if (id === 'odoo') setShowGridBackground(false)
+      if (id === 'intro') setShowGridBackground(true)
       element.scrollIntoView({ behavior: 'smooth' })
       setActiveSection(id)
+      if (id === 'odoo') {
+        window.setTimeout(() => setOdooBlurReplayKey((k) => k + 1), 520)
+      }
     }
   }
 
-  const triggerCelebration = () => {
+  const handleStartExplore = () => {
     setShowConfetti(true)
     setTimeout(() => setShowConfetti(false), 8000)
+    scrollToSection('odoo')
   }
 
   const sections = [
-    { id: 'intro', label: '🏠 首页' },
-    { id: 'odoo', label: '一、Odoo 原理' },
+    { id: 'intro', label: '首页' },
+    { id: 'odoo', label: '一、烛龙-odoo' },
     { id: 'ai-journey', label: '二、AI 全栈之旅' },
     { id: 'practice', label: '三、实战篇' },
     { id: 'summary', label: '四、总结与反思' },
@@ -38,6 +82,19 @@ function App() {
 
   return (
     <div className="app">
+      <div
+        className={`app-background${showGridBackground ? '' : ' app-background--hidden'}`}
+        aria-hidden
+      >
+        <GridScan
+          enableWebcam={false}
+          showPreview={false}
+          linesColor="#4b4863"
+          scanColor="#ff79f2"
+          className="app-background__grid"
+        />
+      </div>
+      <div className="app-foreground">
       {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={200} />}
       
       {/* 导航栏 */}
@@ -60,254 +117,189 @@ function App() {
       <section id="intro" className="hero">
         <div className="hero-content">
           <h1 className="hero-title">🦞 AI 全栈之旅</h1>
-          <p className="hero-subtitle">从 AI 入门到深度实践的完整路径</p>
-          <p className="hero-desc">本文档记录 AI 全栈之旅的实践与反思，涵盖 Odoo 原理、AI 迭代学习、实战案例及总结复盘</p>
-          <button className="cta-button" onClick={triggerCelebration}>
-            🚀 开始探索
-          </button>
+          <TypewriterLoop
+            fullText={HERO_SUBTITLE_TEXT}
+            prefix={HERO_SUBTITLE_TYPE_PARTS.prefix}
+            typo={HERO_SUBTITLE_TYPE_PARTS.typo}
+            suffix={HERO_SUBTITLE_TYPE_PARTS.suffix}
+            className="hero-subtitle"
+            textClassName="hero-subtitle__text"
+          />
+          <p className="hero-desc">AI 全栈之旅的实践与反思，涵盖烛龙-odoo、AI 迭代学习、实战案例及总结复盘</p>
+          <Magnet>
+            <button type="button" className="cta-button" onClick={handleStartExplore}>
+              立即探索
+            </button>
+          </Magnet>
         </div>
-        <div className="hero-decoration"></div>
       </section>
 
-      {/* Odoo 原理 */}
-      <section id="odoo" className="section">
-        <div className="container">
-          <h2 className="section-title">一、Odoo 原理</h2>
+      {/* 烛龙-odoo · React Bits 极光：深底 + 左侧柔绿 + 右侧深紫 */}
+      <section id="odoo" className="section section--soft-aurora section--odoo-aurora">
+        <PixelTrailArea>
+          <div className="section-aurora-bg" aria-hidden>
+            <SoftAurora
+              color1="#4a7c62"
+              color2="#5b2d8f"
+              speed={0.48}
+              brightness={1.02}
+              scale={1.55}
+              enableMouseInteraction={false}
+            />
+          </div>
+          <div className="container">
+          <h2 className="section-title">一、烛龙-odoo</h2>
+          <p className="section-desc section-desc--odoo">以主数据管理与流程自动化贯通全业务链路，解决数据孤岛并实现全链路流程闭环。</p>
           <div className="card">
-            <p>本章节讲解 Odoo 的核心架构与设计理念。</p>
-            <div className="placeholder-text">（待补充 Odoo 原理内容）</div>
+            <BlurRevealContent replayKey={odooBlurReplayKey}>
+              <div className="subsection subsection--in-card">
+                <p>
+                  <span className="odoo-inline-label">烛龙背景：</span>
+                  烛龙是为破解数据孤岛、打通全业务链路而生的企业数字化核心驾驶舱，作为主数据管理与运营平台，
+                  统一向多系统下发标准主数据，以数据与流程自动化贯通全业务链路，实现全链路流程闭环，支撑企业数字化流转。
+                </p>
+              </div>
+              <div className="subsection subsection--in-card">
+                <p>
+                  <span className="odoo-inline-label">Odoo：</span>
+                  <strong>Odoo</strong> 是一套用 <strong>Python</strong> 编写的全栈{' '}
+                  <strong>ERP</strong>：内置 Web 框架、ORM、业务引擎与前端渲染，从后端到界面由同一套技术栈贯通。
+                </p>
+                <p>• 业务上，所有能力都以<strong>「模块」</strong>（Addon）形式组织与扩展——装什么模块，就有什么功能。</p>
+                <p>• 架构上，可以概括成两句：<strong>数据库就是一切</strong>，数据与状态以库为准；</p>
+                <p>
+                  • ORM 控制一切——模型、权限、工作流与界面大量围绕 ORM 展开。搞懂模型与记录如何落库、如何被 ORM 读写，就抓住了主线。
+                </p>
+              </div>
+            </BlurRevealContent>
           </div>
-        </div>
+          </div>
+        </PixelTrailArea>
       </section>
 
-      {/* AI 全栈之旅 */}
-      <section id="ai-journey" className="section">
-        <div className="container">
+      {/* AI 全栈之旅 · React Bits 光线背景（与实战篇对换） */}
+      <section id="ai-journey" className="section section--light-rays">
+        <PixelTrailArea>
+          <div className="section-lightrays-bg" aria-hidden>
+            <LightRays
+              className="section-lightrays-bg__canvas"
+              raysOrigin="top-center"
+              raysColor="#f5f5f5"
+              raysSpeed={0.75}
+              lightSpread={0.9}
+              rayLength={2.4}
+              fadeDistance={1.15}
+              saturation={0.85}
+              followMouse
+              mouseInfluence={0.1}
+              noiseAmount={0.03}
+              distortion={0.04}
+            />
+          </div>
+          <div className="container">
           <h2 className="section-title">二、AI 全栈之旅</h2>
-          <p className="section-desc">本章节讲述从接触 AI 开始的完整学习路径，涵盖 AI 的迭代演进、工具衍生与应用实践。</p>
-          
-          <div className="card-grid">
-            <div className="card highlight">
-              <h3>🤖 Ai-case</h3>
-              <p>AI 问答工具</p>
-            </div>
-          </div>
+          <p className="section-desc">从认知升级、工具沉淀到全栈落地，一条路径看清 AI 如何进入日常工作。</p>
 
-          <div className="subsection">
-            <h3>2.1 AI 认知迭代</h3>
-            <ul>
-              <li>从初识 AI 到深度应用的心路历程</li>
-              <li>AI 能力边界的不断探索</li>
-              <li>从「能用」到「好用」的能力升级</li>
-            </ul>
+          <div className="journey-pillars">
+            <GlareHoverCard className="card journey-pillar">
+              <h3>AI 认知迭代</h3>
+              <p>
+                从初识到深度使用，持续试探模型能力边界，把输出从「能用」打磨到「好用」，形成稳定的心智与预期。
+              </p>
+              <p>• 对话流</p>
+              <p>• IDE</p>
+              <p>• 终端集成</p>
+            </GlareHoverCard>
+            <GlareHoverCard className="card journey-pillar">
+              <h3>工具衍生</h3>
+              <p>
+                围绕 AI 能力搭建工具链：按场景选型、组合插件与自动化，让单点尝试长成可复用、可协作的体系。
+              </p>
+              <p>
+                • <a className="link" href="https://ingeek-iobd.feishu.cn/docx/F2bXdHSXpoC0A5x7apgcHLgcnEY" target="_blank" rel="noopener noreferrer">工具衍生文档</a>
+              </p>
+            </GlareHoverCard>
+            <GlareHoverCard className="card journey-pillar">
+              <h3>全栈应用</h3>
+              <p>
+                后端、前端、运维与文档等环节都能借力 AI：代码生成与审查、界面与体验、监控告警、向量检索与知识沉淀等。
+              </p>
+              <p>• 知识库沉淀</p>
+              <p>• 多agent协作分工</p>
+              <p>• skills</p>
+            </GlareHoverCard>
           </div>
-
-          <div className="subsection">
-            <h3>2.2 工具衍生</h3>
-            <ul>
-              <li>如何围绕 AI 能力构建工具链</li>
-              <li>不同场景下的工具选型与组合</li>
-              <li>从单一工具到生态体系的演进</li>
-            </ul>
           </div>
-
-          <div className="subsection">
-            <h3>2.3 全栈应用</h3>
-            <div className="card-grid">
-              <div className="card">
-                <h4>🦞 后端开发</h4>
-                <p>代码生成、审查、优化</p>
-              </div>
-              <div className="card">
-                <h4>🎨 前端与界面层</h4>
-                <p>借助好的模型能力，增长见识</p>
-              </div>
-              <div className="card">
-                <h4>⚙️ 运维与监控</h4>
-                <p>AI 也有视觉和触觉</p>
-              </div>
-              <div className="card">
-                <h4>📝 文档与知识管理</h4>
-                <p>AI 向量搜索已达成，AI 记忆保持</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        </PixelTrailArea>
       </section>
 
-      {/* 实战篇 */}
-      <section id="practice" className="section">
+      <section id="practice" className="section section--particles">
+        <div className="section-particles-bg" aria-hidden>
+          <PixelSnow className="section-particles-bg__canvas" />
+        </div>
         <div className="container">
           <h2 className="section-title">三、实战篇</h2>
-          <p className="section-desc">本章节收录各类实战案例与操作演示。</p>
-          
-          <div className="card">
-            <h3>🦞 实战训练</h3>
-            <table className="practice-table">
-              <thead>
-                <tr>
-                  <th>案例名称</th>
-                  <th>说明</th>
-                  <th>链接</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>批量消息推送</td>
-                  <td>飞书助手批量处理群发事务</td>
-                  <td><a href="#" className="link">查看案例</a></td>
-                </tr>
-                <tr>
-                  <td>代码排查与审查</td>
-                  <td>Odoo助手代码审查自动化</td>
-                  <td><a href="#" className="link">查看案例</a></td>
-                </tr>
-                <tr>
-                  <td>队列监控告警</td>
-                  <td>工时队列异常监控与处理</td>
-                  <td><a href="#" className="link">查看案例</a></td>
-                </tr>
-                <tr>
-                  <td>多群聊周报</td>
-                  <td>飞书助手自动生成周报</td>
-                  <td><a href="#" className="link">查看案例</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <p className="section-desc">本章节以动画导读形式呈现《实战训练》文档要点，可滚动浏览各小节。</p>
+
+          <TrainingShowcase />
         </div>
       </section>
 
-      {/* 总结与反思 */}
-      <section id="summary" className="section">
-        <div className="container">
+      {/* 总结与反思 · 形状网格背景（细格线 + 方块平滑移动高亮） */}
+      <section id="summary" className="section section--shape-grid">
+        <PixelTrailArea>
+          <div className="section-shape-grid-bg" aria-hidden>
+            <ShapeGridBackground className="section-shape-grid-bg__canvas" />
+          </div>
+          <div className="container">
           <h2 className="section-title">四、总结与反思</h2>
           
           <div className="subsection">
-            <h3>4.1 AI 幻觉问题</h3>
-            <p>在使用 AI 辅助开发的过程中，「AI 幻觉」是面临的核心挑战之一：</p>
+            <p className="section-desc">在使用 AI 辅助开发的过程中，「AI 幻觉」是面临的核心挑战之一：</p>
             
-            <div className="card-grid">
-              <div className="card warning">
-                <h4>1️⃣ 模型能力边界模糊</h4>
-                <p>AI 对复杂业务逻辑的理解有时会出现偏差，生成代码看似合理但实际无法运行</p>
-                <p className="tip">应对策略：保持批判性思维，重要代码必须人工 Review</p>
+            <div className="summary-hallucination-grid">
+              <div className="card summary-hallucination-card">
+                <h4>模型能力（是否越贵越聪明）</h4>
+                <p>AI 对复杂业务逻辑和特定技术栈的理解有时会出现偏差，生成代码看似合理但实际无法运行</p>
+                <p className="tip">应对策略：沉淀模型能力，形成自己的知识库</p>
               </div>
-              <div className="card warning">
-                <h4>2️⃣ 代码不可控，方向无限发展</h4>
+              <div className="card summary-hallucination-card">
+                <h4>代码不可控，方向无限发展（看不懂代码）</h4>
                 <p>AI 生成代码时容易「跑偏」，偏离原始需求，过度工程化</p>
-                <p className="tip">应对策略：明确需求边界，提供足够的上下文和约束</p>
+                <p className="tip">应对策略：明确需求边界，人工 Review 代码</p>
               </div>
-              <div className="card warning">
-                <h4>3️⃣ 裁判又是运动员</h4>
+              <div className="card summary-hallucination-card">
+                <h4>裁判又是运动员（过分自我）</h4>
                 <p>AI 生成的代码由 AI 自己评估，缺乏独立验证</p>
-                <p className="tip">应对策略：引入独立 Review 机制，人工介入关键节点</p>
+                <p className="tip">应对策略：引入独立 Review 机制，保持批判性思维</p>
               </div>
-              <div className="card warning">
-                <h4>4️⃣ 指令模糊，命令反复</h4>
+              <div className="card summary-hallucination-card">
+                <h4>指令模糊，命令反复（想一出是一出）</h4>
                 <p>需求描述不清晰时，AI 给出的结果差异巨大</p>
-                <p className="tip">应对策略：提供具体示例，明确输入输出格式，迭代优化 prompt</p>
+                <p className="tip">应对策略：提供具体示例文档，明确输入输出格式，迭代优化 prompt</p>
               </div>
             </div>
           </div>
 
           <div className="subsection">
-            <h3>4.2 核心经验</h3>
-            <div className="card-grid">
-              <div className="card success">
-                <h4>💡 提示词工程</h4>
-                <p>好的 prompt 是 AI 输出的前提，越具体越有效</p>
-              </div>
-              <div className="card success">
-                <h4>🤝 人机协作</h4>
-                <p>AI 擅长执行，人负责决策，两者配合效率最高</p>
-              </div>
-              <div className="card success">
-                <h4>📦 Skill 沉淀</h4>
-                <p>将重复流程固化为 Skill，减少每次的沟通成本</p>
-              </div>
-              <div className="card success">
-                <h4>🎯 边界意识</h4>
-                <p>知道 AI 能做什么、不能做什么，比会用 AI 更重要</p>
-              </div>
-              <div className="card success">
-                <h4>🔄 持续迭代</h4>
-                <p>AI 能力在飞速进化，保持学习和适应的心态</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="subsection">
-            <h3>4.3 我的 Skill 沉淀</h3>
-            <p>以下是我在实际工作中沉淀出的可复用 Skills，持续更新中：</p>
-            
-            <table className="practice-table">
-              <thead>
-                <tr>
-                  <th>Skill 名称</th>
-                  <th>功能描述</th>
-                  <th>适用场景</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>🦞 飞书助手 - 批量推送</td>
-                  <td>批量处理飞书群发事务</td>
-                  <td>重复通知、多群推送</td>
-                </tr>
-                <tr>
-                  <td>🦞 飞书助手 - 文档抓取</td>
-                  <td>直接读取飞书文档内容</td>
-                  <td>信息确认、知识查阅</td>
-                </tr>
-                <tr>
-                  <td>🦞 飞书助手 - 多群聊周报</td>
-                  <td>自动汇总群聊关键信息生成周报</td>
-                  <td>周期性汇报、问题追踪</td>
-                </tr>
-                <tr>
-                  <td>🦞 Odoo助手 - 代码审查</td>
-                  <td>自动对比历史提交与当前分支</td>
-                  <td>Code Review、Bug 定位</td>
-                </tr>
-                <tr>
-                  <td>🦞 Odoo助手 - 队列监控</td>
-                  <td>实时监控工时队列异常并告警</td>
-                  <td>运维监控、故障预警</td>
-                </tr>
-                <tr>
-                  <td>🦞 Odoo助手 - 代码修改</td>
-                  <td>辅助处理紧急代码修改并提交</td>
-                  <td>紧急修复、加班减负</td>
-                </tr>
-                <tr>
-                  <td>🦞 Odoo助手 - 定时任务</td>
-                  <td>定时执行未完成的开发任务</td>
-                  <td>下班续跑、自动化流程</td>
-                </tr>
-              </tbody>
-            </table>
+            <SkillsLanyard />
           </div>
 
           <div className="conclusion">
-            <h3>🚀 结语</h3>
+            <h3>结语</h3>
             <p>AI 不是银弹，但它是最强大的杠杆。理解它的局限性、发挥它的优势，在实践中不断沉淀和反思，才能真正让 AI 成为工作中的得力助手。</p>
             
             <div className="principles">
               <div className="principle">
-                <span className="principle-icon">🤝</span>
                 <span>人机协作：AI 执行，人来决策</span>
               </div>
               <div className="principle">
-                <span className="principle-icon">📝</span>
                 <span>明确需求：清晰的指令是好的输出的前提</span>
               </div>
               <div className="principle">
-                <span className="principle-icon">🔍</span>
                 <span>批判验证：AI 输出不等于正确，保持质疑精神</span>
               </div>
               <div className="principle">
-                <span className="principle-icon">🔄</span>
                 <span>持续沉淀：把经验固化为 Skill，让效率持续增长</span>
               </div>
             </div>
@@ -315,12 +307,14 @@ function App() {
             <p className="update-time">文档创建时间：2026-04-11 持续更新中……</p>
           </div>
         </div>
+        </PixelTrailArea>
       </section>
 
       {/* 页脚 */}
       <footer className="footer">
         <p>🦞 AI 全栈之旅 - 个人实践记录</p>
       </footer>
+      </div>
     </div>
   )
 }

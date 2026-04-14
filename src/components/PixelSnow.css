@@ -1,0 +1,34 @@
+/* 实战篇 · 像素雪：底色与「二、AI 全栈之旅」光线区块一致（#050508 冷黑） */
+.section--particles {
+  position: relative;
+  overflow: visible;
+  isolation: isolate;
+  background-color: #050508;
+  background-image: linear-gradient(180deg, #06060c 0%, #050508 42%, #040408 100%);
+}
+
+.section--particles::before {
+  display: none;
+}
+
+.section-particles-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.section-particles-bg__canvas,
+.pixel-snow-canvas.section-particles-bg__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.section--particles .container {
+  position: relative;
+  z-index: 1;
+}
